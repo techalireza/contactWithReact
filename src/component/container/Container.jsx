@@ -40,17 +40,17 @@ function Container(props) {
     // ));
     useEffect(() => {
 
-        setfilterSearch(...contact.filter(item =>
+        setfilterSearch([...contact.filter(item =>
             item.name.toLowerCase().startsWith(search)
-        ));
-    }, [search])
+        )]);
+    }, [search,contact])
 
     return (
         <div>
             <>
                 <div id="root" className="container-fluid my-3">
                     <SearchComponent handleChange={handleChange} />
-                    <TableComponent contact={contact} setContact={() => setContact()} filterSearch={filterSearch} />
+                    <TableComponent contact={contact} setContact={setContact} filterSearch={filterSearch} />
                 </div>
             </>
         </div>

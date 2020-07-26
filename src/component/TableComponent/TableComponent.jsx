@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal'
 function TableComponent({ contact, setContact, filterSearch }) {
 
     const [check, setCheck] = useState(false);
-    const [editMood, setEditMood] = useState(false);
+    const [submitTemp, setsubmitTemp] = useState({ value: "Submit", id: 0 });
     const [name, setName] = useState('');
     const [family, setFamily] = useState('');
     const [email, setEmail] = useState('');
@@ -18,16 +18,33 @@ function TableComponent({ contact, setContact, filterSearch }) {
     const submitForm = (e) => {
         e.preventDefault();
         setCheck(false);
+        if (submitTemp.value == "Submit") {
+            setContact([...contact, {
+                id: Date.now(),
+                name,
+                family,
+                email
+            }])
+            setEmail('');
+            setName('');
+            setFamily('');
+        }
+        else if (submitTemp == "Edit") {
+            setContact([...contact.map((item) => {
+                if (item.id == submitTemp.id) {
+                    item.name = name;
+                    item.family = family;
+                    item.email = email;
+                    setsubmitTemp({ value: "Submit", id: 0 });
+                    return item;
 
-        setContact([...contact, {
-            id: Date.now(),
-            name,
-            family,
-            email
-        }])
-        setEmail('');
-        setName('');
-        setFamily('');
+                }
+                else {
+                    return item;
+                }
+            })])
+        }
+        console.log(contact)
     }
     const handleDelete = (id) => {
         setContact(contact.filter(item => item.id !== id))
@@ -37,7 +54,7 @@ function TableComponent({ contact, setContact, filterSearch }) {
         setEmail(item.email)
         setName(item.name)
         setFamily(item.family)
-        setEditMood(true)
+        setsubmitTemp({ value: "Edit", id: item.id })
     }
     return (
         <div>
@@ -55,36 +72,19 @@ function TableComponent({ contact, setContact, filterSearch }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {
-                                contact.map(item => {
-                                    return (
-                                        <tr key={item.id}>
-                                            <td>{item.name}</td>
-                                            <td>{item.family}</td>
-                                            <td>{item.email}</td>
-                                            <td>
-                                                <button type="submit" className="btn btn-primary">Edit</button>
-                                                <button type="reset" className="btn btn-primary">Delete</button>
-                                            </td>
-                                        </tr>
 
-                                    )
-
-                                })
-                            }
-                            {
-                                filterSearch != undefined && filterSearch.map((item) => (
-                                    <tr key={item.id}>
-                                        <td>{item.name}</td>
-                                        <td>{item.family}</td>
-                                        <td>{item.email}</td>
-                                        <td>
-                                            <button type="submit" className="btn btn-primary" onClick={() => handleEdit(item)}>Edit</button>
-                                            <button type="reset" className="btn btn-primary" onClick={() => handleDelete(item.id)}>Delete</button>
-                                        </td>
-                                    </tr>
-                                )
-                                )
+                            {filterSearch.map((item) => (
+                                <tr key={item.id}>
+                                    <td>{item.name}</td>
+                                    <td>{item.family}</td>
+                                    <td>{item.email}</td>
+                                    <td>
+                                        <button type="submit" className="btn btn-primary" onClick={() => handleEdit(item)}>Edit</button>
+                                        <button type="reset" className="btn btn-primary" onClick={() => handleDelete(item.id)}>Delete</button>
+                                    </td>
+                                </tr>
+                            )
+                            )
                             }
                         </tbody>
                     </table>
@@ -112,7 +112,7 @@ function TableComponent({ contact, setContact, filterSearch }) {
                             </div>
                         </Modal.Body>
                         <Modal.Footer>
-                            <button type="submit" className="btn btn-primary">Save</button>
+                            <button type="submit" className="btn btn-primary">{submitTemp.value}</button>
                             <button type="reset" className="btn btn-primary">Clear</button>
 
                         </Modal.Footer>
