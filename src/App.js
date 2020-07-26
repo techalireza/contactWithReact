@@ -4,9 +4,9 @@ import Container from './component/container/Container';
 
 function App() {
   return (
-    <div className="App">
-      <Container />
-    </div>
+
+    <Container />
+
   );
 }
 
