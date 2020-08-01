@@ -1,6 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Modal from 'react-bootstrap/Modal'
-
+import CreateTable from '../CreateTable/CreateTable'
+import MyModal from '../MyModal/MyModal'
+import './TableComponent.css'
+import Swal from 'sweetalert2'
+// import withReactContent from 'sweetalert2-react-content'
 
 function TableComponent({ contact, setContact, filterSearch }) {
 
@@ -8,34 +12,49 @@ function TableComponent({ contact, setContact, filterSearch }) {
     const [submitTemp, setsubmitTemp] = useState({ value: "Submit", id: 0 });
     const [name, setName] = useState('');
     const [family, setFamily] = useState('');
-    const [email, setEmail] = useState('');
+    const [phone, setphone] = useState('');
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    const showForm = (check) => {
-        setCheck(true);
-    }
+    // const showForm = (check) => {
+    //     setCheck(true);
+    // }
+    // const handleSort = () => {
+    //     let temp = {};
+    //     setContact(contact.map((item) => {
+    //         contact.map((itemSort = item ) => {
+    //             // if (item.name > itemSort.name) {
+    //             //     temp = item;
+    //             //     item = itemSort;
+    //             //     itemSort = temp;
+    //             //     console.log(temp)
+    //             // }
+    //             console.log(item);
+    //             console.log(itemSort)
+    //         })
+    //     }));
+    // }
     const submitForm = (e) => {
         e.preventDefault();
         setCheck(false);
+        console.log(name);
         if (submitTemp.value == "Submit") {
             setContact([...contact, {
                 id: Date.now(),
                 name,
                 family,
-                email
+                phone
             }])
-            setEmail('');
-            setName('');
-            setFamily('');
+
         }
-        else if (submitTemp == "Edit") {
+        else if (submitTemp.value == "Edit") {
             setContact([...contact.map((item) => {
                 if (item.id == submitTemp.id) {
                     item.name = name;
                     item.family = family;
-                    item.email = email;
+                    item.phone = phone;
                     setsubmitTemp({ value: "Submit", id: 0 });
+                    console.log(submitTemp);
                     return item;
 
                 }
@@ -43,85 +62,68 @@ function TableComponent({ contact, setContact, filterSearch }) {
                     return item;
                 }
             })])
+
         }
-        console.log(contact)
+
+        handleReset();
+        handleClose();
+
     }
     const handleDelete = (id) => {
-        setContact(contact.filter(item => item.id !== id))
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+          }).then((result) => {
+            if (result.value) {
+              Swal.fire(
+                'Deleted!',
+                'Your file has been deleted.',
+                'success'
+              )
+              setContact(contact.filter(item => item.id !== id))
+            }
+          })
+        
     }
     const handleEdit = (item) => {
         handleShow();
-        setEmail(item.email)
+        setphone(item.phone)
         setName(item.name)
         setFamily(item.family)
         setsubmitTemp({ value: "Edit", id: item.id })
+        console.log(submitTemp)
     }
+    const handleReset = () => {
+        setphone('');
+        setName('');
+        setFamily('');
+    }
+    const handleHide = () => {
+        handleClose()
+        handleReset()
+        setsubmitTemp({ value: "Submit", id: 0 })
+    }
+    // useEffect(() => {
+    //     handleSort();
+    // }, [contact])
+
     return (
         <div>
             <div id="main">
-                <div id="table" className="table-responsive mx-2 ">
-                    <table id='contact_table' className="table table-striped table-hover">
-                        <thead class="thead-dark ">
-                            <tr>
+                <button className="btn w-100 text-left d-flex flex-row align-items-center add-contact" onClick={handleShow}>
+                    <img src="../../../../img/plus.png" alt=""/>
+                    <p>Create New Contact</p>
+                </button>
+                <CreateTable contact={contact} filterSearch={filterSearch} handleDelete={handleDelete} handleEdit={handleEdit} />
 
-                                <th>name</th>
-                                <th>last name</th>
-                                <th>email</th>
-                                <th>action</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            {filterSearch.map((item) => (
-                                <tr key={item.id}>
-                                    <td>{item.name}</td>
-                                    <td>{item.family}</td>
-                                    <td>{item.email}</td>
-                                    <td>
-                                        <button type="submit" className="btn btn-primary" onClick={() => handleEdit(item)}>Edit</button>
-                                        <button type="reset" className="btn btn-primary" onClick={() => handleDelete(item.id)}>Delete</button>
-                                    </td>
-                                </tr>
-                            )
-                            )
-                            }
-                        </tbody>
-                    </table>
-                    <button className="btn btn-primary" onClick={handleShow}>Add Contact</button>
-
-                </div>
-                <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>ADD CONTACT</Modal.Title>
-                    </Modal.Header>
-                    <form id='contact_form' onSubmit={submitForm}>
-                        <Modal.Body>
-                            <div className="form-group">
-                                <label for="id_name">Name: </label>
-                                <input value={name} type="text" onChange={e => setName(e.target.value)} name="name" className="form-control" id="id_name" placeholder="Enter name" required />
-                            </div>
-                            <div className="form-group">
-                                <label for="id_last_name">Last name: </label>
-                                <input value={family} type="text" onChange={e => setFamily(e.target.value)} className="form-control" name="family" id="id_last_name" placeholder="Enter last name" />
-                            </div>
-
-                            <div className="form-group">
-                                <label for="id_email">Email: </label>
-                                <input value={email} type="email" onChange={e => setEmail(e.target.value)} name='email' class="form-control" id="id_email" placeholder="Enter Email" />
-                            </div>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <button type="submit" className="btn btn-primary">{submitTemp.value}</button>
-                            <button type="reset" className="btn btn-primary">Clear</button>
-
-                        </Modal.Footer>
-
-                    </form>
-
-
-
-                </Modal>
+                <MyModal handleHide={handleHide} submitForm={submitForm} setName={setName} show={show}
+                    setFamily={setFamily} setphone={setphone} submitTemp={submitTemp} handleReset={handleReset}
+                    name={name} family={family} phone={phone} />
 
             </div>
         </div>

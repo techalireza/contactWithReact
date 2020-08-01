@@ -1,0 +1,14 @@
+td button{
+    width: auto;
+    height: auto;
+}
+.avatar{
+    height: 50px;
+}
+td button:focus{
+    outline: none;
+    box-shadow: none;
+}
+td button:hover{
+    color: red;
+}

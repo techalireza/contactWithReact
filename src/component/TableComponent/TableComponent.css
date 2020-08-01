@@ -1,0 +1,11 @@
+#main button img{
+    width: 1.5rem;
+    height: 1.5rem;
+}
+#main button p{
+    margin: 0;
+    padding: .5rem;
+}
+.add-contact{
+    background-color: #a000ff !important;
+}
