@@ -7,16 +7,9 @@ import SearchComponent from '../SearchComponent/SearchComponent'
 import TableComponent from '../TableComponent/TableComponent'
 
 
-function Container(props) {
+function Container({contact,setContact}) {
 
-    const [contact, setContact] = useState([
-        { id:1 , name: "Alireza", family: "mousavi", phone: "+989121111111" },
-        { id:12 , name: "mohammad", family: "mousavi", phone: "+989122222222" },
-        { id:13 , name: "fateme sadat", family: "mousavi", phone: "+989123333333" },
-        { id:14 , name: "hasan", family: "abdoly", phone: "+989124444444" },
-        { id:15 , name: "mojtaba", family: "hasani", phone: "+989125555555" },
-        { id:16 , name: "zahra", family: "alipour", phone: "+989126666666" },
-    ]);
+
     const [search, setSearch] = useState('');
     const [filterSearch, setfilterSearch] = useState([])
 
