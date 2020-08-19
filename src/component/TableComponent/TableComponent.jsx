@@ -4,9 +4,10 @@ import CreateTable from '../CreateTable/CreateTable'
 import MyModal from '../MyModal/MyModal'
 import './TableComponent.css'
 import Swal from 'sweetalert2'
-// import withReactContent from 'sweetalert2-react-content'
+import {connect} from 'react-redux'
+import {addContact} from '../../redux/contact/contact.action'
 
-function TableComponent({ contact, setContact, filterSearch }) {
+function TableComponent({ contacts , addContact  }) {
 
     const [check, setCheck] = useState(false);
     const [submitTemp, setsubmitTemp] = useState({ value: "Submit", id: 0 });
@@ -16,39 +17,22 @@ function TableComponent({ contact, setContact, filterSearch }) {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    // const showForm = (check) => {
-    //     setCheck(true);
-    // }
-    // const handleSort = () => {
-    //     let temp = {};
-    //     setContact(contact.map((item) => {
-    //         contact.map((itemSort = item ) => {
-    //             // if (item.name > itemSort.name) {
-    //             //     temp = item;
-    //             //     item = itemSort;
-    //             //     itemSort = temp;
-    //             //     console.log(temp)
-    //             // }
-    //             console.log(item);
-    //             console.log(itemSort)
-    //         })
-    //     }));
-    // }
+    
+
     const submitForm = (e) => {
         e.preventDefault();
         setCheck(false);
         console.log(name);
         if (submitTemp.value == "Submit") {
-            setContact([...contact, {
+            addContact({
                 id: Date.now(),
                 name,
                 family,
                 phone
-            }])
-
+            })
         }
         else if (submitTemp.value == "Edit") {
-            setContact([...contact.map((item) => {
+            addContact([...contacts.map((item) => {
                 if (item.id == submitTemp.id) {
                     item.name = name;
                     item.family = family;
@@ -56,19 +40,18 @@ function TableComponent({ contact, setContact, filterSearch }) {
                     setsubmitTemp({ value: "Submit", id: 0 });
                     console.log(submitTemp);
                     return item;
-
                 }
                 else {
                     return item;
                 }
             })])
-
         }
-
         handleReset();
         handleClose();
-
     }
+
+
+
     const handleDelete = (id) => {
         Swal.fire({
             title: 'Are you sure?',
@@ -85,11 +68,13 @@ function TableComponent({ contact, setContact, filterSearch }) {
                 'Your file has been deleted.',
                 'success'
               )
-              setContact(contact.filter(item => item.id !== id))
+              addContact(contacts.filter(item => item.id !== id))
             }
           })
-        
     }
+
+
+
     const handleEdit = (item) => {
         handleShow();
         setphone(item.phone)
@@ -98,29 +83,37 @@ function TableComponent({ contact, setContact, filterSearch }) {
         setsubmitTemp({ value: "Edit", id: item.id })
         console.log(submitTemp)
     }
+
+
+
     const handleReset = () => {
         setphone('');
         setName('');
         setFamily('');
     }
+
+
+
     const handleHide = () => {
         handleClose()
         handleReset()
         setsubmitTemp({ value: "Submit", id: 0 })
     }
-    // useEffect(() => {
-    //     handleSort();
-    // }, [contact])
+    
 
+    
+    
     return (
         <div>
+            {
+                console.log("table contact : " , contacts)
+            }
             <div id="main">
                 <button className="btn w-100 text-left d-flex flex-row align-items-center add-contact" onClick={handleShow}>
                     <img src="../../../../img/plus.png" alt=""/>
                     <p>Create New Contact</p>
                 </button>
-                <CreateTable contact={contact} filterSearch={filterSearch} handleDelete={handleDelete} handleEdit={handleEdit} />
-
+                <CreateTable contacts={contacts} handleDelete={handleDelete} handleEdit={handleEdit} />
                 <MyModal handleHide={handleHide} submitForm={submitForm} setName={setName} show={show}
                     setFamily={setFamily} setphone={setphone} submitTemp={submitTemp} handleReset={handleReset}
                     name={name} family={family} phone={phone} />
@@ -130,4 +123,42 @@ function TableComponent({ contact, setContact, filterSearch }) {
     )
 }
 
-export default TableComponent
+const mapStateToProps = state =>{
+    return{
+      contacts : state.contactsRootReducer.contactList,
+    }
+  }
+export default connect(mapStateToProps , {addContact})(TableComponent)
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const handleSort = () => {
+    //     let temp = {};
+    //     setContact(contact.map((item) => {
+    //         contact.map((itemSort = item ) => {
+    //             // if (item.name > itemSort.name) {
+    //             //     temp = item;
+    //             //     item = itemSort;
+    //             //     itemSort = temp;
+    //             //     console.log(temp)
+    //             // }
+    //             console.log(item);
+    //             console.log(itemSort)
+    //         })
+    //     }));
+    // }
+
+    // useEffect(() => {
+    //     handleSort();
+    // }, [contact])
+    
