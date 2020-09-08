@@ -17,12 +17,12 @@ const contactReducer = (state = initialState, action) => {
         case types.DELETE_CONTACT:
             return{
                 ...state , 
-                contactList : [...state.contactList.filter(item => item.id !== payload )]
+                contactList : state.contactList.filter(item => item.id != payload )
             }
         case types.EDIT_CONTACT:
             return{
                 ...state ,
-                contactList : [...state.contactList.map(item => item.id == payload.id ? payload : item)]
+                contactList : state.contactList.map(item => item.id == payload.id ? payload : item)
             }
         case types.SET_SEARCH:
             return{

@@ -1,30 +1,32 @@
-import React, { useEffect } from 'react'
+import React, { useEffect , useState } from 'react'
 import {
     Link
 } from "react-router-dom";
 import ShowContact from '../ShowContact/ShowContact';
 import './CreateTable.css'
+import { editContact } from '../../redux/contact/contact.action'
+import { deleteContact } from '../../redux/contact/contact.action'
 import { connect } from 'react-redux'
+import MyModal from '../MyModal/MyModal';
 
 
-function CreateTable({ contacts , search, handleDelete, handleEdit }) {
+function CreateTable({ contacts, search, deleteContact, editContact }) {
+    const [show, setShow] = useState(false);
+    const handleShow = () => setShow(true);
+    const [submitTemp, setsubmitTemp] = useState({ value: "Edit", id: 0 });
+
     const randomColor = () => {
         let randColor = `${Math.floor((Math.random() * 10))}${Math.floor((Math.random() * 10) + 1)}${Math.floor((Math.random() * 10) + 1)}`;
         return randColor;
     }
-
-    // let filterSearch = contacts.filter(item => item.name.toLowerCase().startsWith(search.toLowerCase()))
+    const handleEdit = (item) => {
+        setsubmitTemp({ value: "Edit", item })
+        setShow(!show)
+    }
+    let filterSearch = contacts.filter(item => item.name.toLowerCase().startsWith(search.toLowerCase()))
     return (
         <div>
             <table id='contact_table' className="table table-striped table-hover">
-                {/* <thead class="thead-dark ">
-                    <tr>
-                        <th>name</th>
-                        <th>last name</th>
-                        <th>phone</th>
-                        <th>action</th>
-                    </tr>
-                </thead> */}
                 <tbody>
                     {
                         // contact === filterSearch ?
@@ -43,7 +45,7 @@ function CreateTable({ contacts , search, handleDelete, handleEdit }) {
                         //     )
                         //     )
                         //     :
-                        contacts.map((item) => (
+                        filterSearch.map((item) => (
                             <tr key={item.id}>
                                 <td>{item.name.charAt(0)}</td>
                                 <td>
@@ -62,12 +64,13 @@ function CreateTable({ contacts , search, handleDelete, handleEdit }) {
                                     <a href={`tel:${item.phone}`}><button className="btn">
                                         <img src="../../../../img/phone-call.svg" alt="" />
                                     </button></a>
-                                    <button type="submit" className="btn" onClick={() => handleEdit(item)}>
+                                    <button type="button" className="btn" onClick={() => handleEdit(item)}>
                                         <img src="../../../../img/edit.svg" alt="" />
                                     </button>
-                                    <button type="reset" className="btn" onClick={() => handleDelete(item.id)}>
+                                    <button type="reset" className="btn" onClick={() => deleteContact(item.id)}>
                                         <img src="../../../../img/delete.svg" alt="" />
                                     </button>
+                                    <MyModal show={show} setShow={setShow} submitTemp={submitTemp} setsubmitTemp={setsubmitTemp}/>
                                 </td>
                             </tr>
                         )
@@ -86,5 +89,5 @@ const mapStateToProps = state => {
         search: state.contactsRootReducer.searchList,
     }
 }
-export default connect(mapStateToProps, {})(CreateTable)
+export default connect(mapStateToProps, { editContact, deleteContact })(CreateTable)
 
